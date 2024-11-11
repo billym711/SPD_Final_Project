@@ -1,41 +1,54 @@
 {% extends "layout.html" %}
 
-<!-- BEGIN head BLOCK -->
 {% block head %}
-    <title>Index Page</title>
+    <title>Smart Neighborhood Exchange</title>
 {% endblock %}
-<!-- BEGIN head BLOCK -->
 
-<!-- Replace the "placeholder" called body in the parent template with the following -->
-<!-- BEGIN BODY BLOCK -->
 {% block body %}
+    <h1>Welcome to the Smart Neighborhood Exchange</h1>
+    
+    <p>The Smart Neighborhood Exchange is a platform for communities to share resources such as tools, spaces, and equipment. Participate to help optimize resource usage, reduce waste, and strengthen neighborhood bonds.</p>
+    <p>Explore available listings and connect with top-rated users who are active in sharing resources.</p>
+    
+    <!-- Recent Listings Table -->
+    <h2>Recent Listings</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Description</th>
+                <th>More Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for listing in recent_listings %}
+            <tr>
+                <td><img src="{{ listing.image_url }}" alt="Listing Image" width="100" height="100"></td>
+                <td>{{ listing.description }}</td>
+                <td><a href="{{ url_for('listings') }}">More Details</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-<!-- Add text that will be static for the INDEX page-->
-<h1>Welcome to the Smart Neighborhood Exchange</h1>
-
-
-    <!-- A TABLE VERSION INSTEAD OF A ORDERED LIST VERSION -->
-    <!-- REDUNDENT BUT I WANTE TO SHOW HOW TO FORMAT THE RESULTS DIFFERENTLY -->
-    <H2><u>Table List of Recent Listings</u></H2>
-    <TABLE style="border-collapse: collapse;">
-        <TR style="background-color: #D6EEEE;">
-            <TH style="padding: 5px; border: solid 1px #777;">Project Title</TD>
-            <TH style="padding: 5px; border: solid 1px #777;">Description</TD>
-            <TH style="padding: 5px; border: solid 1px #777;">Visual</TD>
-       </TH>
-       <!-- EXAMPLES OF THE JINJA LANGUAGE FOR LOOPS-->
-        {% for m in message %}
-            <TR>
-                <TD style="padding: 5px; border: solid 1px #777;">{{m.Title}}</TD>
-                <TD style="padding: 5px; border: solid 1px #777;">{{m.Details}}</TD>
-                <TD style="padding: 5px; border: solid 1px #777;">
-                    <img src="{{ url_for('static', filename=m.Image) }}" alt="{{ m.Title }}" width="100" />
-                </TD>
-            </TR>
-        {% endfor %}
-
-
-    </TABLE>
-
-<!-- END BODY BLOCK -->
+    <!-- Top-Rated Users Table -->
+    <h2>Top-Rated Users</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Profile Image</th>
+                <th>Description</th>
+                <th>More Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in top_rated_users %}
+            <tr>
+                <td><img src="{{ user.profile_image_url }}" alt="User Image" width="100" height="100"></td>
+                <td>{{ user.description }}</td>
+                <td><a href="{{ url_for('profile') }}">More Details</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
