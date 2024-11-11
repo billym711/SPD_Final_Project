@@ -1,24 +1,26 @@
-<!-- CREATE CHILD TEMPLATE FOR "DELETE" PAGE (aka Delete Record Page) -->
-<!-- Inherit the Parent page first -->
-{% extends "layout.html" %}
-
-<!-- Replace the "placeholder" called head in the parent template with the following -->
-{% block head %}
-    <title>Delete Record Page</title>
-{% endblock %}
-
-{% block body %}
-
-    <form action="/edit" method="post">
-        <br>
-        <input autocomplete="off" autofocus name="movtitle" placeholder="Name" type="text"><br>
-        <!-- Name this TEXTBOX "movyear"-->
-        <input autocomplete="off" autofocus name="movyear" placeholder="Birth Month" type="text"><br>
-        <!-- Name this TEXTBOX "ImageName"-->
-        <input autocomplete="off" autofocus name="ImageName" placeholder="Birth Day" type="text"><br>
-        <input type="submit">
-        <!-- END Specific to Movie DELETE -->
-
-    </form>
-
- {% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Edit Birthday</title>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Edit Birthday</h1>
+        </header>
+        
+        <!-- Form to edit the birthday -->
+        <section class="section">
+            <form action="{{ url_for('edit', id=birthday['id']) }}" method="post">
+                <input type="text" name="name" value="{{ birthday['name'] }}" required>
+                <input type="number" name="month" min="1" max="12" value="{{ birthday['month'] }}" required>
+                <input type="number" name="day" min="1" max="31" value="{{ birthday['day'] }}" required>
+                <button type="submit">Save Changes</button>
+            </form>
+            <a href="{{ url_for('index') }}">Cancel</a>
+        </section>
+    </div>
+</body>
+</html>
