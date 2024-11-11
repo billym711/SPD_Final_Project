@@ -55,5 +55,21 @@ def edit(id):
         conn.close()
         return render_template("edit.html", birthday=birthday)
 
+@app.route('/bookings')
+def bookings():
+    return render_template('bookings.html')
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/listings')
+def listings():
+    return render_template('listings.html')
+
+@app.route('/profile')
+def profile():
+    return render_template('profile.html')
+
 if __name__ == "__main__":
     app.run(debug=True)
