@@ -10,6 +10,7 @@ def get_db_connection():
     return conn
 
 @app.route("/", methods=["GET", "POST"])
+@app.route("/index", methods=["GET", "POST"])
 def index():
     conn = get_db_connection()
     if request.method == "POST":
