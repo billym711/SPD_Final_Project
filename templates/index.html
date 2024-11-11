@@ -1,56 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <title>Birthday Tracker</title>
-</head>
-<body>
-    <div class="container">
-        <header class="header">
-            <h1>Birthday Tracker</h1>
-        </header>
-        
-        <!-- Form to add a new birthday -->
-        <section class="section">
-            <form action="/" method="post">
-                <input type="text" name="name" placeholder="Name" required>
-                <input type="number" name="month" min="1" max="12" placeholder="Month" required>
-                <input type="number" name="day" min="1" max="31" placeholder="Day" required>
-                <button type="submit">Add Birthday</button>
-            </form>
-        </section>
+{% extends "layout.html" %}
 
-        <!-- Table displaying birthdays -->
-        <section class="section">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Birthday</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for birthday in birthdays %}
-                    <tr>
-                        <td>{{ birthday['name'] }}</td>
-                        <td>{{ birthday['month'] }}/{{ birthday['day'] }}</td>
-                        <td>
-                            <!-- Edit link -->
-                            <a href="{{ url_for('edit', id=birthday['id']) }}">Edit</a>
-                            <!-- Delete form -->
-                             </td><td>
-                            <form action="{{ url_for('delete', id=birthday['id']) }}" method="post" style="display:inline;">
-                                <button type="submit">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </section>
-    </div>
-</body>
-</html>
+<!-- BEGIN head BLOCK -->
+{% block head %}
+    <title>Index Page</title>
+{% endblock %}
+<!-- BEGIN head BLOCK -->
+
+<!-- Replace the "placeholder" called body in the parent template with the following -->
+<!-- BEGIN BODY BLOCK -->
+{% block content %}
+
+<!-- Add text that will be static for the INDEX page-->
+<h1>Welcome to the Smart Neighborhood Exchange</h1>
+
+
+    <!-- A TABLE VERSION INSTEAD OF A ORDERED LIST VERSION -->
+    <!-- REDUNDENT BUT I WANTE TO SHOW HOW TO FORMAT THE RESULTS DIFFERENTLY -->
+    <H2><u>Table List of Recent Listings</u></H2>
+    <TABLE style="border-collapse: collapse;">
+        <TR style="background-color: #D6EEEE;">
+            <TH style="padding: 5px; border: solid 1px #777;">Project Title</TD>
+            <TH style="padding: 5px; border: solid 1px #777;">Description</TD>
+            <TH style="padding: 5px; border: solid 1px #777;">Visual</TD>
+       </TH>
+       <!-- EXAMPLES OF THE JINJA LANGUAGE FOR LOOPS-->
+        {% for m in message %}
+            <TR>
+                <TD style="padding: 5px; border: solid 1px #777;">{{m.Title}}</TD>
+                <TD style="padding: 5px; border: solid 1px #777;">{{m.Details}}</TD>
+                <TD style="padding: 5px; border: solid 1px #777;">
+                    <img src="{{ url_for('static', filename=m.Image) }}" alt="{{ m.Title }}" width="100" />
+                </TD>
+            </TR>
+        {% endfor %}
+
+
+    </TABLE>
+
+<!-- END BODY BLOCK -->
+{% endblock %}
