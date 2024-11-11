@@ -1,0 +1,82 @@
+<!-- !!!!!!!!!!!!!!!!! ANYTHING IN HTML QUOTES CAN BE SEEN THROUGH THE WEB BROWSER !!!!!!!!!!!!!!!!!!!!!-->
+<!-- Right mouse click on your web page in your web browser and select "View (page) Source"  -->
+
+<!-- CREATE CHILD TEMPLATE FOR "INDEX" PAGE (aka Home Page) -->
+<!-- Inherit the Parent page first -->
+{% extends "layout.html" %}
+
+<!-- Replace the "placeholder" called head in the parent template with the following -->
+
+<!-- BEGIN head BLOCK -->
+{% block head %}
+    <title>Index Page</title>
+{% endblock %}
+<!-- BEGIN head BLOCK -->
+
+<!-- Replace the "placeholder" called body in the parent template with the following -->
+<!-- BEGIN BODY BLOCK -->
+{% block body %}
+
+<!-- Add text that will be static for the INDEX page-->
+<h1>Welcome to the Birthday Application!!!</h1>
+
+<p>
+    You can view, insert and delete movies using this application.
+</p>
+<form action="/index" method="post">
+    <br>
+    <input autocomplete="off" autofocus name="movtitle" placeholder="Name" type="text"><br>
+    <!-- Name this TEXTBOX "movyear"-->
+    <input autocomplete="off" autofocus name="movyear" placeholder="Birth Month" type="text"><br>
+    <!-- Name this TEXTBOX "ImageName"-->
+    <input autocomplete="off" autofocus name="ImageName" placeholder="Birth Day" type="text"><br>
+    <input type="hidden" name= "Add" >
+    <button type= "submit" > Add</button></form> 
+
+</form>
+    <!-- A TABLE VERSION INSTEAD OF A ORDERED LIST VERSION -->
+    <!-- REDUNDENT BUT I WANTE TO SHOW HOW TO FORMAT THE RESULTS DIFFERENTLY -->
+    <H2><u>Birthdays</u></H2>
+    <TABLE style="border-collapse: collapse;">
+        <TR style="background-color: #D6EEEE;">
+            <TH style="padding: 5px; border: solid 1px #777;">Name</TD>
+            <TH style="padding: 5px; border: solid 1px #777;">Birthday</TD>
+            <TH style="padding: 5px; border: solid 1px #777;">Edit</TD>
+            <TH style="padding: 5px; border: solid 1px #777;">Delete</TD>
+
+       </TH>
+       <!-- EXAMPLES OF THE JINJA LANGUAGE FOR LOOPS-->
+        {% for m in message %}
+            <TR>
+                <TD style="padding: 5px; border: solid 1px #777;">{{m.Title}}</TD>
+                <TD style="padding: 5px; border: solid 1px #777;">{{m.Year}}/{{m.Image}}
+                </TD>
+                <TD style="padding: 5px; border: solid 1px #777;"><form action="/edit" method="post"><input type="hidden" name= "Title" value = {{m.Title}}>
+                    <button type= "submit" > Edit</button></form>
+                </TD>
+                <TD style="padding: 5px; border: solid 1px #777;"><form action="/index" method="post"><input type="hidden" name= "Title" value = {{m.Title}}>
+                <button type= "submit" > Delete</button></form>
+                </TD>
+            </TR>
+        {% endfor %}
+
+
+        {# ANYTHING IN JINJA COMMENTS CANNOT BE SEEN BY THE WEB BROWSER #}
+
+        {# note: EXAMPLE JINJA COMMENT
+
+            You cannot use HTML comment tags to comment out JINJA. You must use Jinja comments
+            The next line of code will not be run and it will NOT be visible from the web browser.
+            JINJA CODE THAT WILL NEVER RUN
+            {% for user in users %}
+                ...
+            {% endfor %}
+
+            #}
+
+
+    </TABLE>
+
+<!-- END BODY BLOCK -->
+{% endblock %}
+

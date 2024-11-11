@@ -1,0 +1,24 @@
+<!-- CREATE CHILD TEMPLATE FOR "DELETE" PAGE (aka Delete Record Page) -->
+<!-- Inherit the Parent page first -->
+{% extends "layout.html" %}
+
+<!-- Replace the "placeholder" called head in the parent template with the following -->
+{% block head %}
+    <title>Delete Record Page</title>
+{% endblock %}
+
+{% block body %}
+
+    <form action="/edit" method="post">
+        <br>
+        <input autocomplete="off" autofocus name="movtitle" placeholder="Name" type="text"><br>
+        <!-- Name this TEXTBOX "movyear"-->
+        <input autocomplete="off" autofocus name="movyear" placeholder="Birth Month" type="text"><br>
+        <!-- Name this TEXTBOX "ImageName"-->
+        <input autocomplete="off" autofocus name="ImageName" placeholder="Birth Day" type="text"><br>
+        <input type="submit">
+        <!-- END Specific to Movie DELETE -->
+
+    </form>
+
+ {% endblock %}
