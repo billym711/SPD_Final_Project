@@ -5,11 +5,18 @@ import sqlite3
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
-# Database helper functions
+# Helper function to connect to the database
 def get_db_connection():
-    conn = sqlite3.connect('birthdays.db')  # Update with your database name
-    conn.row_factory = sqlite3.Row
+    conn = sqlite3.connect('birthdays.db')  # SQLite database file
+    conn.row_factory = sqlite3.Row  # Enables dictionary-like access
     return conn
+
+# Initialize the database using schema.sql
+def init_db():
+    conn = get_db_connection()
+    with open('schema.sql', 'r') as f:
+        conn.executescript(f.read())
+    conn.close()
 
 # Routes
 @app.route('/')
@@ -22,8 +29,8 @@ def index():
 
 @app.route('/dashboard')
 def dashboard():
+    user_id = 1  # Replace with dynamic user ID after authentication
     conn = get_db_connection()
-    user_id = 1  # Replace with dynamic user ID after implementing authentication
     user = conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
     user_listings = conn.execute('SELECT * FROM listings WHERE user_id = ?', (user_id,)).fetchall()
     user_bookings = conn.execute('SELECT * FROM bookings WHERE user_id = ?', (user_id,)).fetchall()
@@ -31,7 +38,7 @@ def dashboard():
     conn.close()
     return render_template('dashboard.html', user=user, user_listings=user_listings, user_bookings=user_bookings, user_notifications=user_notifications)
 
-@app.route('/listings', methods=['GET', 'POST'])
+@app.route('/listings', methods=['GET'])
 def listings():
     conn = get_db_connection()
     category = request.args.get('category', '')
@@ -63,8 +70,8 @@ def profile(user_id):
 
 @app.route('/bookings')
 def bookings():
+    user_id = 1  # Replace with dynamic user ID after authentication
     conn = get_db_connection()
-    user_id = 1  # Replace with dynamic user ID after implementing authentication
     current_bookings = conn.execute('SELECT * FROM bookings WHERE user_id = ? AND status = "active"', (user_id,)).fetchall()
     past_bookings = conn.execute('SELECT * FROM bookings WHERE user_id = ? AND status = "completed"', (user_id,)).fetchall()
     conn.close()
@@ -72,8 +79,8 @@ def bookings():
 
 @app.route('/book_listing/<int:listing_id>')
 def book_listing(listing_id):
+    user_id = 1  # Replace with dynamic user ID after authentication
     conn = get_db_connection()
-    user_id = 1  # Replace with dynamic user ID after implementing authentication
     conn.execute('INSERT INTO bookings (user_id, listing_id, status, booking_date) VALUES (?, ?, ?, ?)', 
                  (user_id, listing_id, 'active', datetime.now()))
     conn.commit()
@@ -96,7 +103,7 @@ def add_listing():
         title = request.form['title']
         description = request.form['description']
         category = request.form['category']
-        user_id = 1  # Replace with dynamic user ID after implementing authentication
+        user_id = 1  # Replace with dynamic user ID after authentication
         conn = get_db_connection()
         conn.execute('INSERT INTO listings (user_id, title, description, category, status, date_posted) VALUES (?, ?, ?, ?, ?, ?)', 
                      (user_id, title, description, category, 'available', datetime.now()))
@@ -124,4 +131,6 @@ def edit_listing(listing_id):
     return render_template('edit_listing.html', listing=listing)
 
 if __name__ == '__main__':
+    # Uncomment the following line to initialize the database
+    # init_db()
     app.run(debug=True)
