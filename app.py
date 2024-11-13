@@ -150,6 +150,29 @@ def login():
     
     # Render login page
     return render_template('login.html')
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        # Handle registration form submission
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+        location = request.form['location']
+
+        # Insert into the database
+        conn = get_db_connection()
+        conn.execute(
+            'INSERT INTO users (name, email, password, location) VALUES (?, ?, ?, ?)',
+            (name, email, password, location)
+        )
+        conn.commit()
+        conn.close()
+
+        flash('Registration successful! Please log in.')
+        return redirect(url_for('login'))
+
+    # Render the registration form
+    return render_template('register.html')
 
 
 if __name__ == '__main__':
