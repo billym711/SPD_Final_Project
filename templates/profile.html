@@ -1,31 +1,29 @@
 {% extends "layout.html" %}
 
 {% block head %}
-    <title>Smart Neighborhood Exchange - Profile</title>
+    <title>{{ user['name'] }}'s Profile</title>
 {% endblock %}
 
 {% block body %}
     <div class="container">
-        <h1>Your Profile</h1>
-
-        <!-- User Details Section -->
+        <!-- User Information -->
         <section class="profile-details">
-            <h2>User Information</h2>
-            <img src="{{ user.profile_image_url }}" alt="Profile Picture" width="150" height="150">
-            <p><strong>Name:</strong> {{ user.name }}</p>
-            <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Location:</strong> {{ user.location }}</p>
-            <p><strong>Reputation Score:</strong> {{ user.reputation_score }}</p>
+            <h1>{{ user['name'] }}'s Profile</h1>
+            <p><strong>Email:</strong> {{ user['email'] }}</p>
+            <p><strong>Location:</strong> {{ user['location'] }}</p>
+            <p><strong>Reputation Score:</strong> {{ user['reputation_score'] }}</p>
         </section>
 
-        <!-- User Listings Section -->
+        <!-- User Listings -->
         <section class="user-listings">
             <h2>Your Listings</h2>
+            {% if user_listings %}
             <table>
                 <thead>
                     <tr>
-                        <th>Item</th>
+                        <th>Title</th>
                         <th>Description</th>
+                        <th>Category</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -33,22 +31,27 @@
                 <tbody>
                     {% for listing in user_listings %}
                     <tr>
-                        <td>{{ listing.title }}</td>
-                        <td>{{ listing.description }}</td>
-                        <td>{{ listing.status }}</td>
+                        <td>{{ listing['title'] }}</td>
+                        <td>{{ listing['description'] }}</td>
+                        <td>{{ listing['category'] }}</td>
+                        <td>{{ listing['status'] }}</td>
                         <td>
-                            <a href="{{ url_for('edit_listing', listing_id=listing.id) }}">Edit</a> |
-                            <a href="{{ url_for('delete_listing', listing_id=listing.id) }}">Delete</a>
+                            <a href="{{ url_for('edit_listing', listing_id=listing['id']) }}">Edit</a> |
+                            <a href="{{ url_for('delete_listing', listing_id=listing['id']) }}">Delete</a>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <p>You have no listings yet. <a href="{{ url_for('add_listing') }}">Add a new listing</a>.</p>
+            {% endif %}
         </section>
 
         <!-- Reviews Section -->
         <section class="user-reviews">
-            <h2>Reviews About You</h2>
+            <h2>Reviews</h2>
+            {% if user_reviews %}
             <table>
                 <thead>
                     <tr>
@@ -61,14 +64,23 @@
                 <tbody>
                     {% for review in user_reviews %}
                     <tr>
-                        <td>{{ review.reviewer_name }}</td>
-                        <td>{{ review.rating }}/5</td>
-                        <td>{{ review.comment }}</td>
-                        <td>{{ review.date }}</td>
+                        <td>{{ review['reviewer_name'] }}</td>
+                        <td>{{ review['rating'] }}/5</td>
+                        <td>{{ review['comment'] }}</td>
+                        <td>{{ review['date_posted'] }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <p>No reviews yet. <a href="{{ url_for('leave_review', user_id=user['id']) }}">Be the first to leave a review</a>.</p>
+            {% endif %}
+        </section>
+
+        <!-- Leave Review Link -->
+        <section class="leave-review">
+            <h2>Leave a Review</h2>
+            <p><a href="{{ url_for('leave_review', user_id=user['id']) }}">Leave a Review for {{ user['name'] }}</a></p>
         </section>
     </div>
 {% endblock %}

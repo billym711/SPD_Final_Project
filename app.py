@@ -63,10 +63,22 @@ def listings():
 def profile(user_id):
     conn = get_db_connection()
     user = conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
+    if user is None:
+        conn.close()
+        flash('User not found.', 'error')
+        return redirect(url_for('index'))
+
     user_listings = conn.execute('SELECT * FROM listings WHERE user_id = ?', (user_id,)).fetchall()
-    user_reviews = conn.execute('SELECT * FROM reviews WHERE user_id = ?', (user_id,)).fetchall()
+    user_reviews = conn.execute('''
+        SELECT reviews.*, users.name AS reviewer_name 
+        FROM reviews 
+        JOIN users ON reviews.reviewer_id = users.id 
+        WHERE reviews.user_id = ?
+    ''', (user_id,)).fetchall()
     conn.close()
+
     return render_template('profile.html', user=user, user_listings=user_listings, user_reviews=user_reviews)
+
 
 @app.route('/bookings')
 def bookings():
@@ -172,6 +184,28 @@ def register():
 
     # Render the registration form
     return render_template('register.html')
+@app.route('/leave_review/<int:user_id>', methods=['GET', 'POST'])
+def leave_review(user_id):
+    if request.method == 'POST':
+        reviewer_id = 1  # Replace with dynamic user ID from session
+        rating = int(request.form['rating'])
+        comment = request.form['comment']
+        date_posted = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        # Insert the review into the database
+        conn = get_db_connection()
+        conn.execute(
+            'INSERT INTO reviews (user_id, reviewer_id, rating, comment, date_posted) VALUES (?, ?, ?, ?, ?)',
+            (user_id, reviewer_id, rating, comment, date_posted)
+        )
+        conn.commit()
+        conn.close()
+
+        flash('Your review has been submitted successfully!')
+        return redirect(url_for('profile', user_id=user_id))
+
+    # Render the review form
+    return render_template('leave_review.html', user_id=user_id)
 
 
 
