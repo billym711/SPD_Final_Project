@@ -1,5 +1,5 @@
 -- Create Users Table
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
@@ -10,7 +10,7 @@ CREATE TABLE users (
 );
 
 -- Create Listings Table
-CREATE TABLE listings (
+CREATE TABLE IF NOT EXISTS listings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     title TEXT NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE listings (
 );
 
 -- Create Bookings Table
-CREATE TABLE bookings (
+CREATE TABLE IF NOT EXISTS bookings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     listing_id INTEGER NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE bookings (
 );
 
 -- Create Reviews Table
-CREATE TABLE reviews (
+CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     reviewer_id INTEGER NOT NULL,
@@ -46,7 +46,7 @@ CREATE TABLE reviews (
 );
 
 -- Create Notifications Table
-CREATE TABLE notifications (
+CREATE TABLE IF NOT EXISTS notifications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     message TEXT NOT NULL,

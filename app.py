@@ -129,8 +129,30 @@ def edit_listing(listing_id):
     listing = conn.execute('SELECT * FROM listings WHERE id = ?', (listing_id,)).fetchone()
     conn.close()
     return render_template('edit_listing.html', listing=listing)
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        # Handle login form submission
+        email = request.form['email']
+        password = request.form['password']
+        
+        conn = get_db_connection()
+        user = conn.execute('SELECT * FROM users WHERE email = ? AND password = ?', (email, password)).fetchone()
+        conn.close()
+
+        if user:
+            flash('Login successful!')
+            # Save user information to session here (if using sessions)
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid email or password', 'error')
+            return redirect(url_for('login'))
+    
+    # Render login page
+    return render_template('login.html')
+
 
 if __name__ == '__main__':
     # Uncomment the following line to initialize the database
-    # init_db()
+    #init_db()
     app.run(debug=True)
