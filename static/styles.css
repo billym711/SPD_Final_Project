@@ -1,83 +1,218 @@
+/* General Body Styles */
 body {
     background-color: #fff;
-    color: #212529;
+    color: #333;
     font-size: 1rem;
     font-weight: 400;
-    line-height: 1.5;
+    line-height: 1.6;
     margin: 0;
     text-align: left;
+    font-family: 'Arial', sans-serif;
 }
 
+/* Container for centralizing content */
 .container {
     margin-left: auto;
     margin-right: auto;
-    padding-left: 15px;
-    padding-right: 15px;
-    text-align: center;
+    padding: 0 20px;
     width: 90%;
 }
 
+/* Header Styles */
 .header {
-    background-color: #477bff;
+    background-color: #212529;  /* Dark grey/black */
     color: #fff;
     margin-bottom: 2rem;
-    padding: 2rem 1rem;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading Styles - Title on the page */
+h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color:black;  /* White text */
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
     text-align: center;
 }
 
+/* Navigation Bar Styles */
+.navbar {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    background-color: #6c757d;  /* Medium grey */
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.navbar a {
+    background-color: #6c757d;  /* Grey background */
+    color: #fff;
+    padding: 0.5rem 1.25rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.navbar a:hover {
+    background-color: #495057;  /* Darker grey on hover */
+    transform: scale(1.05);
+}
+
+.navbar a:active {
+    background-color: #343a40;  /* Even darker grey on active */
+}
+
+/* Section Styling */
 .section {
-    padding-bottom: 1rem;
-    padding-left: 2rem;
-    padding-right: 2rem;
-    padding-top: 0.5rem;
+    padding: 1rem 2rem;
 }
 
 .section:hover {
-    background-color: #f5f5f5;
-    transition: color 2s ease-in-out, background-color 0.15s ease-in-out;
+    background-color: #f8f9fa;  /* Light grey background on hover */
+    transition: background-color 0.3s ease;
 }
 
-h1 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 48px;
-}
-
+/* Button and Submit Input Styles */
 button, input[type="submit"] {
-    background-color: #d9edff;
-    border: 1px solid transparent;
+    background-color: #6c757d;  /* Medium grey */
+    border: 1px solid #495057;  /* Darker grey */
     border-radius: 0.25rem;
-    font-size: 0.95rem;
-    font-weight: 400;
-    line-height: 1.5;
-    padding: 0.375rem 0.75rem;
-    text-align: center;
-    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    vertical-align: middle;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.5rem 1.25rem;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+button:hover, input[type="submit"]:hover {
+    background-color: #495057;  /* Darker grey on hover */
+    border-color: #343a40;  /* Almost black */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Input Field Styling */
 input[type="text"], input[type="number"] {
     line-height: 1.8;
-    width: 25%;
+    width: 100%;
+    max-width: 350px;
+    padding: 0.75rem;
+    border: 1px solid #ccc;  /* Light grey border */
+    border-radius: 0.25rem;
+    margin-top: 0.5rem;
+    background-color: #f8f9fa;  /* Light grey background */
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 input[type="text"]:hover, input[type="number"]:hover {
-    background-color: #f5f5f5;
-    transition: color 2s ease-in-out, background-color 0.15s ease-in-out;
+    background-color: #e9ecef;  /* Slightly darker grey */
+    border-color: #6c757d;  /* Medium grey border */
 }
 
+/* Table Styling */
 table {
     background-color: transparent;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     width: 100%;
+    border-collapse: collapse;
 }
 
 table th,
 table td {
-    padding: 0.75rem;
+    padding: 1rem;
     vertical-align: middle;
+    border-bottom: 1px solid #ddd;  /* Light grey border */
+    text-align: left;
+}
+
+table th {
+    background-color: #f8f9fa;  /* Light grey for header */
+    font-weight: 600;
+    color: #212529;
 }
 
 tbody tr:nth-of-type(odd) {
-    background-color: rgb(179, 208, 255, 0.3)
+    background-color: #f1f1f1;  /* Very light grey for odd rows */
 }
 
+tbody tr:nth-of-type(even) {
+    background-color: #fff;  /* White for even rows */
+}
+
+tbody tr:hover {
+    background-color: #e9ecef;  /* Slightly darker grey */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Footer Styling (if applicable) */
+footer {
+    background-color: #212529;  /* Dark grey/black */
+    color: #fff;
+    padding: 1.5rem 0;
+    text-align: center;
+    margin-top: 2rem;
+    border-radius: 8px;
+}
+
+footer a {
+    color: #6c757d;  /* Grey color for links */
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: #fff;  /* White color for links on hover */
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+    .container {
+        width: 100%;
+        padding: 0 10px;
+    }
+
+    h1 {
+        font-size: 2.5rem;  /* Smaller header size on mobile */
+    }
+
+    .section {
+        padding: 1rem;
+    }
+
+    input[type="text"], input[type="number"] {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    table {
+        font-size: 0.9rem;
+    }
+
+    button, input[type="submit"] {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1.1rem;
+    }
+
+    .navbar {
+        flex-direction: column;
+    }
+
+    .navbar a {
+        padding: 0.75rem 1.5rem;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+}
