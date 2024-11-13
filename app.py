@@ -94,12 +94,12 @@ def profile(user_id):
 @app.route('/bookings', methods=['GET'])
 def bookings():
     conn = get_db_connection()
-    user_id = 1  # Replace with the logged-in user's ID from session
+    user_id = 1  # Replace with dynamic user ID from session
 
     # Fetch current bookings
     current_bookings = conn.execute('''
-        SELECT bookings.id AS booking_id, bookings.status, bookings.listing_id AS item_id, 
-               listings.title, listings.image_url 
+        SELECT bookings.id AS booking_id, bookings.listing_id AS item_id, 
+               bookings.status, listings.title, listings.image_url 
         FROM bookings 
         JOIN listings ON bookings.listing_id = listings.id 
         WHERE bookings.user_id = ? AND bookings.status = 'active'
@@ -107,8 +107,8 @@ def bookings():
 
     # Fetch past bookings
     past_bookings = conn.execute('''
-        SELECT bookings.id AS booking_id, bookings.status, bookings.listing_id AS item_id, 
-               listings.title, listings.image_url 
+        SELECT bookings.id AS booking_id, bookings.listing_id AS item_id, 
+               bookings.status, listings.title, listings.image_url 
         FROM bookings 
         JOIN listings ON bookings.listing_id = listings.id 
         WHERE bookings.user_id = ? AND bookings.status = 'completed'

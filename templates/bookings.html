@@ -27,7 +27,7 @@
                     <td>{{ booking.booking_date }}</td>
                     <td>{{ booking.status }}</td>
                     <td>
-                        <a href="{{ url_for('cancel_booking', booking_id=booking.id) }}">Cancel</a>
+                        <a href="{{ url_for('cancel_booking', booking_id=booking.booking_id) }}">Cancel</a>
                         |
                         <a href="{{ url_for('view_item', item_id=booking.item_id) }}">View Item</a>
                     </td>
