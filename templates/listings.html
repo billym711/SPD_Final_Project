@@ -31,6 +31,7 @@
         <!-- Listings Table -->
         <section class="listings">
             <h2>Resource Listings</h2>
+            {% if all_listings %}
             <table>
                 <thead>
                     <tr>
@@ -45,22 +46,31 @@
                 <tbody>
                     {% for listing in all_listings %}
                     <tr>
-                        <td><img src="{{ listing.image_url }}" alt="{{ listing.title }}" width="100" height="100"></td>
-                        <td>{{ listing.title }}</td>
-                        <td>{{ listing.description }}</td>
-                        <td>{{ listing.owner_name }}</td>
-                        <td>{{ listing.availability }}</td>
+                        <td><img src="{{ url_for('static', filename='/' + listing['image_url']) }}" alt="{{ listing['title'] }}" width="100" height="100"></td>
+                        <td>{{ listing['title'] }}</td>
+                        <td>{{ listing['description'] }}</td>
+                        <td>{{ listing['owner_name'] }}</td>
                         <td>
-                            {% if listing.availability == 'available' %}
-                            <a href="{{ url_for('book_listing', listing_id=listing.id) }}">Book Now</a>
+                            {% if listing['status'] == 'available' %}
+                                Available
                             {% else %}
-                            <span>Unavailable</span>
+                                Unavailable
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if listing['status'] == 'available' %}
+                                <a href="{{ url_for('book_listing', listing_id=listing['id']) }}">Book Now</a>
+                            {% else %}
+                                <span>Unavailable</span>
                             {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <p>No listings available at the moment. Try adjusting your filters or check back later!</p>
+            {% endif %}
         </section>
     </div>
 {% endblock %}

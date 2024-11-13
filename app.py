@@ -44,6 +44,7 @@ def listings():
     category = request.args.get('category', '')
     search = request.args.get('search', '')
 
+    # Fetch listings without join
     query = 'SELECT * FROM listings WHERE 1=1'
     params = []
 
@@ -55,9 +56,19 @@ def listings():
         params.append(f'%{search}%')
         params.append(f'%{search}%')
 
-    all_listings = conn.execute(query, params).fetchall()
+    listings_data = conn.execute(query, params).fetchall()
+
+    # Fetch owner names separately
+    listings = []
+    for listing in listings_data:
+        owner = conn.execute('SELECT name FROM users WHERE id = ?', (listing['user_id'],)).fetchone()
+        listing_with_owner = dict(listing)
+        listing_with_owner['owner_name'] = owner['name'] if owner else 'Unknown'
+        listings.append(listing_with_owner)
+
     conn.close()
-    return render_template('listings.html', all_listings=all_listings)
+    return render_template('listings.html', all_listings=listings)
+
 
 @app.route('/profile/<int:user_id>')
 def profile(user_id):
@@ -80,14 +91,36 @@ def profile(user_id):
     return render_template('profile.html', user=user, user_listings=user_listings, user_reviews=user_reviews)
 
 
-@app.route('/bookings')
+@app.route('/bookings', methods=['GET'])
 def bookings():
-    user_id = 1  # Replace with dynamic user ID after authentication
     conn = get_db_connection()
-    current_bookings = conn.execute('SELECT * FROM bookings WHERE user_id = ? AND status = "active"', (user_id,)).fetchall()
-    past_bookings = conn.execute('SELECT * FROM bookings WHERE user_id = ? AND status = "completed"', (user_id,)).fetchall()
+    user_id = 1  # Replace with the logged-in user's ID from session
+
+    # Fetch current bookings
+    current_bookings = conn.execute('''
+        SELECT bookings.id AS booking_id, bookings.status, bookings.listing_id AS item_id, 
+               listings.title, listings.image_url 
+        FROM bookings 
+        JOIN listings ON bookings.listing_id = listings.id 
+        WHERE bookings.user_id = ? AND bookings.status = 'active'
+    ''', (user_id,)).fetchall()
+
+    # Fetch past bookings
+    past_bookings = conn.execute('''
+        SELECT bookings.id AS booking_id, bookings.status, bookings.listing_id AS item_id, 
+               listings.title, listings.image_url 
+        FROM bookings 
+        JOIN listings ON bookings.listing_id = listings.id 
+        WHERE bookings.user_id = ? AND bookings.status = 'completed'
+    ''', (user_id,)).fetchall()
+
     conn.close()
-    return render_template('bookings.html', current_bookings=current_bookings, past_bookings=past_bookings)
+    return render_template(
+        'bookings.html',
+        current_bookings=current_bookings,
+        past_bookings=past_bookings
+    )
+
 
 @app.route('/book_listing/<int:listing_id>')
 def book_listing(listing_id):
@@ -115,32 +148,71 @@ def add_listing():
         title = request.form['title']
         description = request.form['description']
         category = request.form['category']
-        user_id = 1  # Replace with dynamic user ID after authentication
+        image_url = request.form.get('image_url', '')
+        user_id = 1  # Replace with session or dynamic user ID
+
+        # Insert the new listing into the database
         conn = get_db_connection()
-        conn.execute('INSERT INTO listings (user_id, title, description, category, status, date_posted) VALUES (?, ?, ?, ?, ?, ?)', 
-                     (user_id, title, description, category, 'available', datetime.now()))
+        conn.execute(
+            'INSERT INTO listings (user_id, title, description, category, status, date_posted, image_url) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            (user_id, title, description, category, 'available', datetime.now(), image_url)
+        )
         conn.commit()
         conn.close()
+
         flash('Listing added successfully!')
         return redirect(url_for('dashboard'))
+
     return render_template('add_listing.html')
+
 
 @app.route('/edit_listing/<int:listing_id>', methods=['GET', 'POST'])
 def edit_listing(listing_id):
     conn = get_db_connection()
     if request.method == 'POST':
+        # Update the listing with the submitted form data
         title = request.form['title']
         description = request.form['description']
         category = request.form['category']
-        conn.execute('UPDATE listings SET title = ?, description = ?, category = ? WHERE id = ?', 
-                     (title, description, category, listing_id))
+        image_url = request.form['image_url']
+
+        conn.execute(
+            'UPDATE listings SET title = ?, description = ?, category = ?, image_url = ? WHERE id = ?',
+            (title, description, category, image_url, listing_id)
+        )
         conn.commit()
         conn.close()
+
         flash('Listing updated successfully!')
         return redirect(url_for('dashboard'))
+
+    # Fetch the current listing data for editing
     listing = conn.execute('SELECT * FROM listings WHERE id = ?', (listing_id,)).fetchone()
     conn.close()
+
+    if not listing:
+        flash('Listing not found.', 'error')
+        return redirect(url_for('dashboard'))
+
     return render_template('edit_listing.html', listing=listing)
+
+@app.route('/delete_listing/<int:listing_id>', methods=['POST'])
+def delete_listing(listing_id):
+    conn = get_db_connection()
+    listing = conn.execute('SELECT * FROM listings WHERE id = ?', (listing_id,)).fetchone()
+    if not listing:
+        conn.close()
+        flash('Listing not found.', 'error')
+        return redirect(url_for('dashboard'))
+
+    conn.execute('DELETE FROM listings WHERE id = ?', (listing_id,))
+    conn.commit()
+    conn.close()
+
+    flash('Listing deleted successfully!')
+    return redirect(url_for('dashboard'))
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -186,6 +258,8 @@ def register():
     return render_template('register.html')
 @app.route('/leave_review/<int:user_id>', methods=['GET', 'POST'])
 def leave_review(user_id):
+    conn = get_db_connection()
+
     if request.method == 'POST':
         reviewer_id = 1  # Replace with dynamic user ID from session
         rating = int(request.form['rating'])
@@ -193,11 +267,23 @@ def leave_review(user_id):
         date_posted = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
         # Insert the review into the database
-        conn = get_db_connection()
         conn.execute(
             'INSERT INTO reviews (user_id, reviewer_id, rating, comment, date_posted) VALUES (?, ?, ?, ?, ?)',
             (user_id, reviewer_id, rating, comment, date_posted)
         )
+
+        # Recalculate reputation score for the reviewed user
+        avg_rating = conn.execute(
+            'SELECT AVG(rating) AS avg_rating FROM reviews WHERE user_id = ?',
+            (user_id,)
+        ).fetchone()['avg_rating']
+
+        # Update the user's reputation score
+        conn.execute(
+            'UPDATE users SET reputation_score = ? WHERE id = ?',
+            (int(avg_rating), user_id)
+        )
+
         conn.commit()
         conn.close()
 
@@ -206,8 +292,17 @@ def leave_review(user_id):
 
     # Render the review form
     return render_template('leave_review.html', user_id=user_id)
+@app.route('/view_item/<int:item_id>', methods=['GET'])
+def view_item(item_id):
+    conn = get_db_connection()
+    item = conn.execute('SELECT * FROM listings WHERE id = ?', (item_id,)).fetchone()
+    conn.close()
 
+    if not item:
+        flash('Item not found.', 'error')
+        return redirect(url_for('listings'))
 
+    return render_template('view_item.html', item=item)
 
 if __name__ == '__main__':
     # Uncomment the following line to initialize the database

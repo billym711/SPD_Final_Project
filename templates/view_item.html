@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block head %}
+    <title>View Item</title>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>{{ item['title'] }}</h1>
+        <p><strong>Description:</strong> {{ item['description'] }}</p>
+        <p><strong>Category:</strong> {{ item['category'] }}</p>
+        <p><strong>Status:</strong> {{ 'Available' if item['status'] == 'available' else 'Unavailable' }}</p>
+        {% if item['image_url'] %}
+        <img src="{{ url_for('static', filename='images/' + item['image_url']) }}" alt="{{ item['title'] }}" width="300">
+        {% endif %}
+        <p><a href="{{ url_for('listings') }}">Back to Listings</a></p>
+    </div>
+{% endblock %}
