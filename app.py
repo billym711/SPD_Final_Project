@@ -153,13 +153,12 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        # Handle registration form submission
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
-        location = request.form['location']
+        location = request.form.get('location', '')
 
-        # Insert into the database
+        # Directly insert into the database without validation
         conn = get_db_connection()
         conn.execute(
             'INSERT INTO users (name, email, password, location) VALUES (?, ?, ?, ?)',
@@ -168,11 +167,12 @@ def register():
         conn.commit()
         conn.close()
 
-        flash('Registration successful! Please log in.')
+        flash('Registration successful! You can now log in.')
         return redirect(url_for('login'))
 
     # Render the registration form
     return render_template('register.html')
+
 
 
 if __name__ == '__main__':
