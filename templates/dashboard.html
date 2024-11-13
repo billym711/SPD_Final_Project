@@ -1,17 +1,82 @@
 {% extends "layout.html" %}
 
-<!-- BEGIN head BLOCK -->
 {% block head %}
-    <title>Index Page</title>
+    <title>Smart Neighborhood Exchange - Dashboard</title>
 {% endblock %}
-<!-- BEGIN head BLOCK -->
 
-<!-- Replace the "placeholder" called body in the parent template with the following -->
-<!-- BEGIN BODY BLOCK -->
 {% block body %}
+    <div class="container">
+        <h1>Welcome to Your Dashboard, {{ user.name }}!</h1>
+        <p>Manage your resources, bookings, and community interactions all in one place.</p>
 
-<!-- Add text that will be static for the INDEX page-->
-<h1>Welcome to your user dashboard</h1>
+        <!-- My Listings Section -->
+        <section class="my-listings">
+            <h2>Your Listings</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for listing in user_listings %}
+                    <tr>
+                        <td>{{ listing.title }}</td>
+                        <td>{{ listing.description }}</td>
+                        <td>{{ listing.status }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_listing', listing_id=listing.id) }}">Edit</a> |
+                            <a href="{{ url_for('delete_listing', listing_id=listing.id) }}">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="{{ url_for('add_listing') }}">Add New Listing</a>
+        </section>
 
-<!-- END BODY BLOCK -->
+        <!-- My Bookings Section -->
+        <section class="my-bookings">
+            <h2>Your Bookings</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Booking Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in user_bookings %}
+                    <tr>
+                        <td>{{ booking.item_name }}</td>
+                        <td>{{ booking.booking_date }}</td>
+                        <td>{{ booking.status }}</td>
+                        <td>
+                            {% if booking.status == 'active' %}
+                            <a href="{{ url_for('cancel_booking', booking_id=booking.id) }}">Cancel</a>
+                            {% else %}
+                            <span>Completed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Notifications Section -->
+        <section class="notifications">
+            <h2>Notifications</h2>
+            <ul>
+                {% for notification in user_notifications %}
+                <li>{{ notification.message }} - <em>{{ notification.date }}</em></li>
+                {% endfor %}
+            </ul>
+        </section>
+    </div>
 {% endblock %}

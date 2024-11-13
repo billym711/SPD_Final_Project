@@ -1,17 +1,74 @@
 {% extends "layout.html" %}
 
-<!-- BEGIN head BLOCK -->
 {% block head %}
-    <title>Index Page</title>
+    <title>Smart Neighborhood Exchange - Profile</title>
 {% endblock %}
-<!-- BEGIN head BLOCK -->
 
-<!-- Replace the "placeholder" called body in the parent template with the following -->
-<!-- BEGIN BODY BLOCK -->
 {% block body %}
+    <div class="container">
+        <h1>Your Profile</h1>
 
-<!-- Add text that will be static for the INDEX page-->
-<h1>Your Profile</h1>
+        <!-- User Details Section -->
+        <section class="profile-details">
+            <h2>User Information</h2>
+            <img src="{{ user.profile_image_url }}" alt="Profile Picture" width="150" height="150">
+            <p><strong>Name:</strong> {{ user.name }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Location:</strong> {{ user.location }}</p>
+            <p><strong>Reputation Score:</strong> {{ user.reputation_score }}</p>
+        </section>
 
-<!-- END BODY BLOCK -->
+        <!-- User Listings Section -->
+        <section class="user-listings">
+            <h2>Your Listings</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for listing in user_listings %}
+                    <tr>
+                        <td>{{ listing.title }}</td>
+                        <td>{{ listing.description }}</td>
+                        <td>{{ listing.status }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_listing', listing_id=listing.id) }}">Edit</a> |
+                            <a href="{{ url_for('delete_listing', listing_id=listing.id) }}">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Reviews Section -->
+        <section class="user-reviews">
+            <h2>Reviews About You</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Reviewer</th>
+                        <th>Rating</th>
+                        <th>Comment</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for review in user_reviews %}
+                    <tr>
+                        <td>{{ review.reviewer_name }}</td>
+                        <td>{{ review.rating }}/5</td>
+                        <td>{{ review.comment }}</td>
+                        <td>{{ review.date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </div>
 {% endblock %}

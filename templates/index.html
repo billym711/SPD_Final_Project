@@ -1,54 +1,66 @@
 {% extends "layout.html" %}
 
 {% block head %}
-    <title>Smart Neighborhood Exchange</title>
+    <title>Smart Neighborhood Exchange - Home</title>
 {% endblock %}
 
 {% block body %}
-    <h1>Welcome to the Smart Neighborhood Exchange</h1>
-    
-    <p>The Smart Neighborhood Exchange is a platform for communities to share resources such as tools, spaces, and equipment. Participate to help optimize resource usage, reduce waste, and strengthen neighborhood bonds.</p>
-    <p>Explore available listings and connect with top-rated users who are active in sharing resources.</p>
-    
-    <!-- Recent Listings Table -->
-    <h2>Recent Listings</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Image</th>
-                <th>Description</th>
-                <th>More Details</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for listing in recent_listings %}
-            <tr>
-                <td><img src="{{ listing.image_url }}" alt="Listing Image" width="100" height="100"></td>
-                <td>{{ listing.description }}</td>
-                <td><a href="{{ url_for('listings') }}">More Details</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="container">
+        <h1>Welcome to the Smart Neighborhood Exchange</h1>
+        <p>
+            The Smart Neighborhood Exchange is your platform for sharing tools, spaces, and equipment 
+            within your community. Help reduce waste, optimize resource usage, and strengthen bonds 
+            with your neighbors.
+        </p>
+        
+        <!-- Recent Listings Section -->
+        <h2>Recent Listings</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Description</th>
+                    <th>More Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for listing in recent_listings %}
+                <tr>
+                    <td>
+                        <img src="{{ listing.image_url }}" alt="Listing Image" width="100" height="100">
+                    </td>
+                    <td>{{ listing.description }}</td>
+                    <td>
+                        <a href="{{ url_for('listings') }}">View Details</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-    <!-- Top-Rated Users Table -->
-    <h2>Top-Rated Users</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Profile Image</th>
-                <th>Description</th>
-                <th>More Details</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in top_rated_users %}
-            <tr>
-                <td><img src="{{ user.profile_image_url }}" alt="User Image" width="100" height="100"></td>
-                <td>{{ user.description }}</td>
-                <td><a href="{{ url_for('profile') }}">More Details</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <!-- Top-Rated Users Section -->
+        <h2>Top-Rated Users</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Profile Image</th>
+                    <th>User</th>
+                    <th>More Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in top_rated_users %}
+                <tr>
+                    <td>
+                        <img src="{{ user.profile_image_url }}" alt="User Image" width="100" height="100">
+                    </td>
+                    <td>{{ user.name }}</td>
+                    <td>
+                        <a href="{{ url_for('profile', user_id=user.id) }}">View Profile</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

@@ -1,43 +1,34 @@
-<!-- CREATE PARENT TEMPLATE FOR THE ENTIRE WEBSITE -->
-
-<!-- BEGIN: STATIC HTML -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
     <head>
-        {% block head %}
-
-        {% endblock %}
-        <!-- Notice the syntax. It is customary to keep the static information in a folder called static -->
-        <!-- You can then create subfolders in the static folder and reference them in the file parameter -->
+        <title>Smart Neighborhood Exchange</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+        {% block head %}
+        {% endblock %}
     </head>
     <body>
-        <table>
-            <tr>
-                <td style="vertical-align:top">
-                    <a href=/index>Home</a> |
-                    <a href=/dashboard>Dashboard</a> |
-                    <a href=/listings>Listings</a> |
-                    <a href=/profile>Profile</a> |
-                    <a href=/bookings>Bookings</a> |
-                    <br><br>
-                </td>
-            </tr>
-            <tr>
-                <td style="vertical-align:top">
-<!-- END: STATIC HTML -->
+        <!-- Navigation -->
+        <header class="header">
+            <h1>Smart Neighborhood Exchange</h1>
+            <nav>
+                <a href="{{ url_for('index') }}">Home</a> |
+                <a href="{{ url_for('dashboard') }}">Dashboard</a> |
+                <a href="{{ url_for('listings') }}">Listings</a> |
+                <a href="{{ url_for('profile') }}">Profile</a> |
+                <a href="{{ url_for('bookings') }}">Bookings</a> |
+                <a href="{{ url_for('login') }}">Login</a>
+            </nav>
+        </header>
+        
+        <!-- Main Content -->
+        <main>
+            {% block body %}
+            {% endblock %}
+        </main>
 
-                    <!-- BEGIN: DYNAMIC HTML-->
-                    <!-- Placeholder called "body" -->
-                    {% block body %}
-                    {% endblock %}
-                    <!-- End Placeholder called "body" -->
-                    <!-- END: DYNAMIC HTML -->
-
-<!-- BEGIN: STATIC HTML -->
-                </td>
-            </tr>
-        </table>
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 Smart Neighborhood Exchange. All Rights Reserved.</p>
+        </footer>
     </body>
 </html>
-<!-- END: STATIC HTML -->

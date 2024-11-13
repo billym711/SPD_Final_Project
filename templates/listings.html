@@ -1,17 +1,66 @@
 {% extends "layout.html" %}
 
-<!-- BEGIN head BLOCK -->
 {% block head %}
-    <title>Index Page</title>
+    <title>Smart Neighborhood Exchange - Listings</title>
 {% endblock %}
-<!-- BEGIN head BLOCK -->
 
-<!-- Replace the "placeholder" called body in the parent template with the following -->
-<!-- BEGIN BODY BLOCK -->
 {% block body %}
+    <div class="container">
+        <h1>Available Listings</h1>
+        <p>Explore resources available in your community and make a booking today!</p>
 
-<!-- Add text that will be static for the INDEX page-->
-<h1>See all Listings Below</h1>
+        <!-- Filter and Search Section -->
+        <section class="filters">
+            <form method="GET" action="{{ url_for('listings') }}">
+                <label for="category">Category:</label>
+                <select id="category" name="category">
+                    <option value="">All</option>
+                    <option value="tools">Tools</option>
+                    <option value="appliances">Appliances</option>
+                    <option value="sports">Sports Equipment</option>
+                    <option value="gardening">Gardening</option>
+                </select>
 
-<!-- END BODY BLOCK -->
+                <label for="search">Search:</label>
+                <input type="text" id="search" name="search" placeholder="Search for resources...">
+
+                <button type="submit">Filter</button>
+            </form>
+        </section>
+
+        <!-- Listings Table -->
+        <section class="listings">
+            <h2>Resource Listings</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Owner</th>
+                        <th>Availability</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for listing in all_listings %}
+                    <tr>
+                        <td><img src="{{ listing.image_url }}" alt="{{ listing.title }}" width="100" height="100"></td>
+                        <td>{{ listing.title }}</td>
+                        <td>{{ listing.description }}</td>
+                        <td>{{ listing.owner_name }}</td>
+                        <td>{{ listing.availability }}</td>
+                        <td>
+                            {% if listing.availability == 'available' %}
+                            <a href="{{ url_for('book_listing', listing_id=listing.id) }}">Book Now</a>
+                            {% else %}
+                            <span>Unavailable</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </div>
 {% endblock %}

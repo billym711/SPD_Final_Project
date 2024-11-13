@@ -1,17 +1,66 @@
 {% extends "layout.html" %}
 
-<!-- BEGIN head BLOCK -->
 {% block head %}
-    <title>Index Page</title>
+    <title>Smart Neighborhood Exchange - Bookings</title>
 {% endblock %}
-<!-- BEGIN head BLOCK -->
 
-<!-- Replace the "placeholder" called body in the parent template with the following -->
-<!-- BEGIN BODY BLOCK -->
 {% block body %}
+    <div class="container">
+        <h1>Your Bookings</h1>
+        <p>Manage all your current and past bookings here. Stay organized and keep track of your shared resources.</p>
+        
+        <!-- Current Bookings Section -->
+        <h2>Current Bookings</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Booking Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in current_bookings %}
+                <tr>
+                    <td>{{ booking.item_name }}</td>
+                    <td>{{ booking.booking_date }}</td>
+                    <td>{{ booking.status }}</td>
+                    <td>
+                        <a href="{{ url_for('cancel_booking', booking_id=booking.id) }}">Cancel</a>
+                        |
+                        <a href="{{ url_for('view_item', item_id=booking.item_id) }}">View Item</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-<!-- Add text that will be static for the INDEX page-->
-<h1>Welcome to the Booking Page</h1>
-
-<!-- END BODY BLOCK -->
+        <!-- Past Bookings Section -->
+        <h2>Past Bookings</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Booking Date</th>
+                    <th>Feedback</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in past_bookings %}
+                <tr>
+                    <td>{{ booking.item_name }}</td>
+                    <td>{{ booking.booking_date }}</td>
+                    <td>
+                        {% if booking.feedback_given %}
+                        <span>Feedback Provided</span>
+                        {% else %}
+                        <a href="{{ url_for('leave_feedback', booking_id=booking.id) }}">Leave Feedback</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
