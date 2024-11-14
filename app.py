@@ -42,7 +42,7 @@ def index():
 
 @app.route('/dashboard')
 def dashboard():
-    user_id = 1  # Replace with dynamic user ID after authentication
+    user_id = session['user_id']  # Replace with dynamic user ID after authentication
     conn = get_db_connection()
     user = conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
     user_listings = conn.execute('SELECT * FROM listings WHERE user_id = ?', (user_id,)).fetchall()
