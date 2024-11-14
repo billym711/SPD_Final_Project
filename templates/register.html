@@ -20,6 +20,9 @@
             <label for="location">Location:</label>
             <input type="text" id="location" name="location">
 
+            <label for="profile_image">Profile Image (Name Only):</label><br>
+            <input name="profile_image" placeholder="Profile Image Name (e.g., user1.jpg)" type="text"><br><br>    
+
             <button type="submit">Register</button>
         </form>
         <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a>.</p>
