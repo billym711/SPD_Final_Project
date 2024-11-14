@@ -249,7 +249,7 @@ def register():
         conn = get_db_connection()
         conn.execute(
             'INSERT INTO users (name, email, password, location, profile_image) VALUES (?, ?, ?, ?, ?)',
-            (name, email, password, location, f'images/profiles/{profile_image}' if profile_image else None)
+            (name, email, password, location, f'/{profile_image}' if profile_image else None)
         )
         conn.commit()
         conn.close()
