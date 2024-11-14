@@ -221,3 +221,33 @@ footer a:hover {
     font-size: 2.5rem;
     text-align: center;
 }
+.message-list {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #f9f9f9;
+}
+
+.message {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.message.sent {
+    background: #e6f7ff;
+    text-align: right;
+}
+
+.message.received {
+    background: #fff;
+    text-align: left;
+}
+
+.timestamp {
+    display: block;
+    font-size: 0.8em;
+    color: #888;
+}

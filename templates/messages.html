@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<h2>Messages with {{ receiver['email'] }}</h2>
+
+<div class="message-list">
+    {% for message in messages %}
+        <div class="message {% if message['sender_id'] == session['user_id'] %}sent{% else %}received{% endif %}">
+            <p>{{ message['content'] }}</p>
+            <span class="timestamp">{{ message['timestamp'] }}</span>
+        </div>
+    {% endfor %}
+</div>
+
+<form method="POST" action="{{ url_for('send_message', user_id=receiver['id']) }}">
+    <textarea name="content" rows="3" placeholder="Type your message here..." required></textarea>
+    <button type="submit">Send</button>
+</form>
+{% endblock %}

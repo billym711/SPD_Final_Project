@@ -260,6 +260,7 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
+        name = request.form.get("name")
         email = request.form.get('email')  # Changed from username to email
         password = request.form.get('password')
 
@@ -268,7 +269,7 @@ def register():
             return redirect(url_for('register'))
 
         conn = get_db_connection()
-        conn.execute('INSERT INTO users (email, password) VALUES (?, ?)', (email, password))
+        conn.execute('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', (name, email, password))
         conn.commit()
         conn.close()
 
@@ -326,9 +327,52 @@ def view_item(item_id):
         return redirect(url_for('listings'))
 
     return render_template('view_item.html', item=item)
+@app.route('/messages/<int:user_id>', methods=['GET', 'POST'])
+def messages(user_id):
+    if 'user_id' not in session:
+        flash('You must be logged in to access messages.', 'error')
+        return redirect(url_for('login'))
+
+    current_user_id = session['user_id']
+    conn = get_db_connection()
+
+    # Fetch messages between the logged-in user and the specified user
+    messages = conn.execute('''
+        SELECT * FROM messages
+        WHERE (sender_id = ? AND receiver_id = ?)
+           OR (sender_id = ? AND receiver_id = ?)
+        ORDER BY timestamp ASC
+    ''', (current_user_id, user_id, user_id, current_user_id)).fetchall()
+
+    # Fetch the receiver's details
+    receiver = conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
+
+    conn.close()
+
+    return render_template('messages.html', messages=messages, receiver=receiver)
+@app.route('/messages/<int:user_id>', methods=['POST'])
+def send_message(user_id):
+    if 'user_id' not in session:
+        flash('You must be logged in to send messages.', 'error')
+        return redirect(url_for('login'))
+
+    sender_id = session['user_id']
+    content = request.form.get('content')
+
+    if not content:
+        flash('Message content cannot be empty.', 'error')
+        return redirect(url_for('messages', user_id=user_id))
+
+    conn = get_db_connection()
+    conn.execute('INSERT INTO messages (sender_id, receiver_id, content) VALUES (?, ?, ?)',
+                 (sender_id, user_id, content))
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('messages', user_id=user_id))
 
 
 if __name__ == '__main__':
     # Uncomment the following line to initialize the database
-    #init_db()
+    init_db()
     app.run(debug=True)
