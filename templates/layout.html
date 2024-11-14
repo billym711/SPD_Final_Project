@@ -11,13 +11,16 @@
         <header class="header">
             <h1 id="main-heading">Smart Neighborhood Exchange</h1>
             <nav>
-                <a href="{{ url_for('index') }}">Home</a> |
-                <a href="{{ url_for('dashboard') }}">Dashboard</a> |
-                <a href="{{ url_for('listings') }}">Listings</a> |
-                <a href="{{ url_for('profile', user_id=1) }}">Profile</a> |
-                <a href="{{ url_for('bookings') }}">Bookings</a> |
-                <a href="{{ url_for('login') }}">Login</a> |
-                <a href="{{ url_for('register') }}">Register</a> |
+                <a href="{{ url_for('index') }}">Home</a>|
+                    {% if 'user_id' in session %}
+                        <a href="{{ url_for('dashboard') }}">Dashboard</a>|
+                        <a href="{{ url_for('listings') }}">Listings</a>|
+                        <a href="{{ url_for('bookings') }}">Bookings</a>|
+                        <a href="{{ url_for('logout') }}">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}">Login</a>|
+                        <a href="{{ url_for('register') }}">Register</a>
+                    {% endif %}
             </nav>
         </header>
         

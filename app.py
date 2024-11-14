@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import session, redirect, url_for, flash
 from datetime import datetime
 import sqlite3
 
@@ -10,6 +11,18 @@ def get_db_connection():
     conn = sqlite3.connect('birthdays.db')  # SQLite database file
     conn.row_factory = sqlite3.Row  # Enables dictionary-like access
     return conn
+
+from functools import wraps
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Please log in to access this page.', 'error')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 # Initialize the database using schema.sql
 def init_db():
@@ -216,49 +229,54 @@ def delete_listing(listing_id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # Handle login form submission
-        email = request.form['email']
-        password = request.form['password']
-        
+        email = request.form.get('email')  # Changed from username to email
+        password = request.form.get('password')
+
+        if not email or not password:
+            flash('Both email and password are required.', 'error')
+            return redirect(url_for('login'))
+
         conn = get_db_connection()
-        user = conn.execute('SELECT * FROM users WHERE email = ? AND password = ?', (email, password)).fetchone()
+        user = conn.execute('SELECT * FROM users WHERE email = ?', (email,)).fetchone()
         conn.close()
 
-        if user:
-            flash('Login successful!')
-            # Save user information to session here (if using sessions)
+        if user and user['password'] == password:  # Replace with hashed password check in production
+            session['user_id'] = user['id']
+            session['email'] = user['email']
+            flash('You are now logged in.', 'success')
             return redirect(url_for('dashboard'))
         else:
-            flash('Invalid email or password', 'error')
-            return redirect(url_for('login'))
-    
-    # Render login page
+            flash('Invalid email or password.', 'error')
+
     return render_template('login.html')
+
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('index'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        # Get form data
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form['password']
-        location = request.form.get('location', '')
-        profile_image = request.form.get('profile_image', '')  # User-provided image name
+        email = request.form.get('email')  # Changed from username to email
+        password = request.form.get('password')
 
-        # Insert user data into the database
+        if not email or not password:
+            flash('Both email and password are required.', 'error')
+            return redirect(url_for('register'))
+
         conn = get_db_connection()
-        conn.execute(
-            'INSERT INTO users (name, email, password, location, profile_image) VALUES (?, ?, ?, ?, ?)',
-            (name, email, password, location, f'{profile_image}' if profile_image else None)
-        )
+        conn.execute('INSERT INTO users (email, password) VALUES (?, ?)', (email, password))
         conn.commit()
         conn.close()
 
-        flash('Registration successful! You can now log in.')
+        flash('Registration successful. Please log in.', 'success')
         return redirect(url_for('login'))
 
-    # Render the registration form
     return render_template('register.html')
+
 
 
 @app.route('/leave_review/<int:user_id>', methods=['GET', 'POST'])
@@ -308,6 +326,7 @@ def view_item(item_id):
         return redirect(url_for('listings'))
 
     return render_template('view_item.html', item=item)
+
 
 if __name__ == '__main__':
     # Uncomment the following line to initialize the database
