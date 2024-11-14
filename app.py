@@ -260,23 +260,35 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        name = request.form.get("name")
-        email = request.form.get('email')  # Changed from username to email
+        name = request.form.get('name')
+        email = request.form.get('email')
         password = request.form.get('password')
+        profile_image = request.form.get('profile_image')  # Retrieve the profile image URL
 
-        if not email or not password:
-            flash('Both email and password are required.', 'error')
+        if not name or not email or not password:
+            flash('All required fields must be filled out.', 'error')
             return redirect(url_for('register'))
 
-        conn = get_db_connection()
-        conn.execute('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', (name, email, password))
-        conn.commit()
-        conn.close()
+        # Use a default profile image if none is provided
+        if not profile_image:
+            profile_image = None  # Store NULL in the database
 
-        flash('Registration successful. Please log in.', 'success')
-        return redirect(url_for('login'))
+        conn = get_db_connection()
+        try:
+            conn.execute(
+                'INSERT INTO users (name, email, password, profile_image) VALUES (?, ?, ?, ?)',
+                (name, email, password, profile_image)
+            )
+            conn.commit()
+            flash('Registration successful. Please log in.', 'success')
+            return redirect(url_for('login'))
+        except sqlite3.IntegrityError:
+            flash('An account with this email already exists.', 'error')
+        finally:
+            conn.close()
 
     return render_template('register.html')
+
 
 
 
