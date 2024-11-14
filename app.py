@@ -234,7 +234,7 @@ def login():
     
     # Render login page
     return render_template('login.html')
-@app.route('/register', methods=['GET', 'POST'])
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -245,17 +245,11 @@ def register():
         location = request.form.get('location', '')
         profile_image = request.form.get('profile_image', '')  # User-provided image name
 
-        # Validate that the image exists in the static folder
-        image_path = os.path.join(app.config['UPLOAD_FOLDER'], profile_image)
-        if not os.path.isfile(image_path):
-            flash('Profile image not found in the static/images/profiles/ folder.', 'error')
-            return redirect(url_for('register'))
-
         # Insert user data into the database
         conn = get_db_connection()
         conn.execute(
-            'INSERT INTO users (name, email, password, location, profile_image_url) VALUES (?, ?, ?, ?, ?)',
-            (name, email, password, location, f'images/profiles/{profile_image}')
+            'INSERT INTO users (name, email, password, location, profile_image) VALUES (?, ?, ?, ?, ?)',
+            (name, email, password, location, f'images/profiles/{profile_image}' if profile_image else None)
         )
         conn.commit()
         conn.close()
@@ -265,6 +259,7 @@ def register():
 
     # Render the registration form
     return render_template('register.html')
+
 
 @app.route('/leave_review/<int:user_id>', methods=['GET', 'POST'])
 def leave_review(user_id):
