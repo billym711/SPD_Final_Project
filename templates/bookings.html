@@ -23,8 +23,8 @@
             <tbody>
                 {% for booking in current_bookings %}
                 <tr>
-                    <td>{{ booking.item_name }}</td>
-                    <td>{{ booking.booking_date }}</td>
+                    <td>{{ booking.title }}</td>
+                    <td>{{ booking.date }}</td>
                     <td>{{ booking.status }}</td>
                     <td>
                         <a href="{{ url_for('cancel_booking', booking_id=booking.booking_id) }}">Cancel</a>
@@ -49,8 +49,8 @@
             <tbody>
                 {% for booking in past_bookings %}
                 <tr>
-                    <td>{{ booking.item_name }}</td>
-                    <td>{{ booking.booking_date }}</td>
+                    <td>{{ booking.title }}</td>
+                    <td>{{ booking.date }}</td>
                     <td>
                         {% if booking.feedback_given %}
                         <span>Feedback Provided</span>

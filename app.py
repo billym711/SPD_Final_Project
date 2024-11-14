@@ -107,12 +107,12 @@ def profile(user_id):
 @app.route('/bookings', methods=['GET'])
 def bookings():
     conn = get_db_connection()
-    user_id = 1  # Replace with dynamic user ID from session
+    user_id = session['user_id']  # Replace with dynamic user ID from session
 
     # Fetch current bookings
     current_bookings = conn.execute('''
         SELECT bookings.id AS booking_id, bookings.listing_id AS item_id, 
-               bookings.status, listings.title, listings.image_url 
+               bookings.status, listings.title AS title, listings.date_posted AS date
         FROM bookings 
         JOIN listings ON bookings.listing_id = listings.id 
         WHERE bookings.user_id = ? AND bookings.status = 'active'
@@ -121,7 +121,7 @@ def bookings():
     # Fetch past bookings
     past_bookings = conn.execute('''
         SELECT bookings.id AS booking_id, bookings.listing_id AS item_id, 
-               bookings.status, listings.title, listings.image_url 
+               bookings.status, listings.title AS title, listings.date_posted AS date
         FROM bookings 
         JOIN listings ON bookings.listing_id = listings.id 
         WHERE bookings.user_id = ? AND bookings.status = 'completed'
@@ -137,7 +137,7 @@ def bookings():
 
 @app.route('/book_listing/<int:listing_id>')
 def book_listing(listing_id):
-    user_id = 1  # Replace with dynamic user ID after authentication
+    user_id = session['user_id']  # Replace with dynamic user ID after authentication
     conn = get_db_connection()
     conn.execute('INSERT INTO bookings (user_id, listing_id, status, booking_date) VALUES (?, ?, ?, ?)', 
                  (user_id, listing_id, 'active', datetime.now()))
@@ -162,7 +162,7 @@ def add_listing():
         description = request.form['description']
         category = request.form['category']
         image_url = request.form.get('image_url', '')
-        user_id = 1  # Replace with session or dynamic user ID
+        user_id = session['user_id']  # Replace with session or dynamic user ID
 
         # Insert the new listing into the database
         conn = get_db_connection()
