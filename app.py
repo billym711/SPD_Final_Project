@@ -297,7 +297,7 @@ def leave_review(user_id):
     conn = get_db_connection()
 
     if request.method == 'POST':
-        reviewer_id = 1  # Replace with dynamic user ID from session
+        reviewer_id = session['user_id']  # Replace with dynamic user ID from session
         rating = int(request.form['rating'])
         comment = request.form['comment']
         date_posted = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -339,49 +339,65 @@ def view_item(item_id):
         return redirect(url_for('listings'))
 
     return render_template('view_item.html', item=item)
-@app.route('/messages/<int:user_id>', methods=['GET', 'POST'])
-def messages(user_id):
-    if 'user_id' not in session:
-        flash('You must be logged in to access messages.', 'error')
-        return redirect(url_for('login'))
-
-    current_user_id = session['user_id']
+@app.route('/messages', methods=['GET', 'POST'])
+@login_required
+def messages():
+    current_user_id = session.get('user_id')
     conn = get_db_connection()
 
-    # Fetch messages between the logged-in user and the specified user
-    messages = conn.execute('''
-        SELECT * FROM messages
-        WHERE (sender_id = ? AND receiver_id = ?)
-           OR (sender_id = ? AND receiver_id = ?)
-        ORDER BY timestamp ASC
-    ''', (current_user_id, user_id, user_id, current_user_id)).fetchall()
+    # Handle sending a message
+    if request.method == 'POST':
+        receiver_id = request.form.get('receiver_id')
+        content = request.form.get('content')
 
-    # Fetch the receiver's details
-    receiver = conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
+        if not receiver_id or not content:
+            flash('Recipient and message content are required.', 'error')
+            return redirect(url_for('messages'))
+
+        conn.execute('INSERT INTO messages (sender_id, receiver_id, content, timestamp) VALUES (?, ?, ?, ?)',
+                     (current_user_id, receiver_id, content, datetime.now()))
+        conn.commit()
+        flash('Message sent successfully.', 'success')
+        return redirect(url_for('messages', selected_user=receiver_id))
+
+    # Fetch all users for the dropdown (excluding the current user)
+    users = conn.execute('SELECT id, name FROM users WHERE id != ?', (current_user_id,)).fetchall()
+
+    # Fetch conversations (unique message threads)
+    conversations = conn.execute('''
+        SELECT DISTINCT users.id AS user_id, users.name AS user_name
+        FROM messages
+        JOIN users ON (messages.sender_id = users.id OR messages.receiver_id = users.id)
+        WHERE users.id != ? AND (messages.sender_id = ? OR messages.receiver_id = ?)
+    ''', (current_user_id, current_user_id, current_user_id)).fetchall()
+
+    # Fetch messages with the selected user (if any)
+    selected_user = request.args.get('selected_user')
+    chat_messages = []
+    selected_user_name = None
+    if selected_user:
+        chat_messages = conn.execute('''
+            SELECT * FROM messages
+            WHERE (sender_id = ? AND receiver_id = ?)
+               OR (sender_id = ? AND receiver_id = ?)
+            ORDER BY timestamp ASC
+        ''', (current_user_id, selected_user, selected_user, current_user_id)).fetchall()
+
+        selected_user_name = conn.execute(
+            'SELECT name FROM users WHERE id = ?', (selected_user,)
+        ).fetchone()
 
     conn.close()
 
-    return render_template('messages.html', messages=messages, receiver=receiver)
-@app.route('/messages/<int:user_id>', methods=['POST'])
-def send_message(user_id):
-    if 'user_id' not in session:
-        flash('You must be logged in to send messages.', 'error')
-        return redirect(url_for('login'))
+    return render_template(
+        'messages.html',
+        users=users,
+        conversations=conversations,
+        chat_messages=chat_messages,
+        selected_user=selected_user,
+        selected_user_name=selected_user_name['name'] if selected_user_name else None
+    )
 
-    sender_id = session['user_id']
-    content = request.form.get('content')
-
-    if not content:
-        flash('Message content cannot be empty.', 'error')
-        return redirect(url_for('messages', user_id=user_id))
-
-    conn = get_db_connection()
-    conn.execute('INSERT INTO messages (sender_id, receiver_id, content) VALUES (?, ?, ?)',
-                 (sender_id, user_id, content))
-    conn.commit()
-    conn.close()
-
-    return redirect(url_for('messages', user_id=user_id))
 
 
 if __name__ == '__main__':
