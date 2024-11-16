@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask import session, redirect, url_for, flash
 from datetime import datetime
 import sqlite3
+import os
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -403,4 +404,5 @@ def messages():
 if __name__ == '__main__':
     # Uncomment the following line to initialize the database
     init_db()
-    app.run(host="0.0.0.0", port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, host="0.0.0.0", port=port)
