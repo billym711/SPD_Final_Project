@@ -8,7 +8,7 @@ app.secret_key = 'your_secret_key'
 
 # Helper function to connect to the database
 def get_db_connection():
-    conn = sqlite3.connect('birthdays.db')  # SQLite database file
+    conn = sqlite3.connect('database.db')  # SQLite database file
     conn.row_factory = sqlite3.Row  # Enables dictionary-like access
     return conn
 
@@ -403,4 +403,4 @@ def messages():
 if __name__ == '__main__':
     # Uncomment the following line to initialize the database
     init_db()
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
